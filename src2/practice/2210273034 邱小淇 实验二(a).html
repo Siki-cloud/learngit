@@ -1,0 +1,172 @@
+<html>
+
+<head>
+  <style>
+    body {
+      font-family: Helvetica, Arial, sans-serif
+    }
+
+    h1 {
+      background-color: steelblue;
+      color:white;
+      padding: 5px;
+    }
+    h2 {
+      color: gray;
+    }
+    #CatergoryChart,#Map,#Other{
+       border-width: 2px;
+       border-color: gray;
+       border-style: solid;
+    }
+    .mainView{
+      display: flex;
+    }
+   
+  </style>
+</head>
+
+<body>
+  <h1>Global Sales</h1>
+  <div class="mainView">
+    <div>
+      <h2>Categories</h2>
+      <svg id="CatergoryChart">
+		  <g id="rects"></g>
+		  <g id="xAxis"></g>
+		  <g id="yAxis"></g>
+		  <g id="xtag"></g>
+	  </svg>
+    </div>
+    <div>
+      <h2>Areas</h2>
+      <svg id="Map"></svg>
+    </div>
+    <div>
+      <h2>Other</h2>
+      <svg id="Other"></svg>
+    </div>
+  </div>
+   <script src="../d3/d3.min.js"></script>
+   <script>
+	   var barCharWidth = 480;
+	   var barCharHeight = 480;
+	   var barCharPadding ={
+		   top:20,
+		   left:70,
+		   bottom:40,
+		   right:30,
+	   };
+	   //设置svg 长宽
+	   var barChart = d3.select("#CatergoryChart")
+	   .attr("width",barCharWidth)
+	   .attr("height",barCharHeight);
+	   
+	   //读取数据
+	   var barData;
+	   d3.csv("../data/sub-categories-sales.csv",function(d){
+		   return {
+			   subCategory:d.SubCategory,
+			   profit:+d.Profit,
+			   sales:+d.Sales/1000 //把文本转化为数值 
+		   };
+	   }).then(function(data){
+		   barData = data; 
+		   drawBarChart();//根据barData绘制柱状图
+	   });
+	   function drawBarChart(){
+		   console.log(barData)
+		   //水平比例尺
+		   var maxSales = d3.max(barData,function(d){
+			   return d.sales;
+		   });
+		   var xScale = d3.scaleLinear()
+		   .domain([0,maxSales]).nice()//输入值的范围
+		   //.range([barCharPadding.left,barCharWidth-barCharPadding.right]);//输出位置范围[30-450]
+			.range([0,1]);
+		
+			//垂直比例尺
+			var yScale = d3.scaleBand()
+			        .domain(d3.range(barData.map( function(d){
+			          return d.subCategory;
+			        }).length)) // 得到所有类别信息
+			        .rangeRound([barCharPadding.top, barCharHeight - barCharPadding.bottom]) //[30-450] set the output range
+			        .paddingInner(0.3);//设置柱状体间隔
+			
+			//定义比例 利润驱动的颜色
+			var maxProfit = d3.max(barData,function(d){
+				return d.profit;
+			});
+			var color = d3.scaleDiverging()
+			.domain([-maxProfit,maxProfit])
+			.interpolator(d3.interpolateRdBu);
+			
+			//绑定数据
+			var bindings = d3.select("#rects").selectAll("rect")
+			  .data(barData);
+			var updateRects = bindings;
+			var enterRects = bindings.enter();
+			var exitRects = bindings.exit();
+			
+			//绘制柱状体
+			enterRects.append('rect')
+			.attr("width",function(d,i){
+				return xScale(d.sales)*(barCharWidth-barCharPadding.left-barCharPadding.right);})
+			.attr("height",yScale.bandwidth()) //bandwith 查看每个柱状体的宽度
+			.attr("x", function(d,i){
+			  return barCharPadding.left; //x始终是 第一个位置
+			})
+			.attr("y", function(d,i){
+			  return yScale(i);
+			  
+			})
+			.style("fill", function(d,i){
+				return color(d.profit)
+			});
+			
+			//添加数值
+			enterRects.append("text")
+			.text(function(d){return d.sales.toFixed (2);})
+			.attr('x',function(d,i){
+				return barCharPadding.left;
+			})
+			.attr('y',function(d,i){
+				console.log(yScale(i))
+				return yScale(i)+ yScale.bandwidth()/2+5;
+			})
+			.attr('fill','grey')
+			.attr('font-size','12px')
+			
+			//添加x y轴坐标
+			var ytag = d3.scaleBand().domain(barData.map(function(d){
+				return d.subCategory;
+			}))
+			.range([barCharPadding.top,barCharHeight-barCharPadding.bottom])
+			.paddingInner(0.3)
+			var yAxis = d3.axisLeft(ytag)
+			d3.select("#yAxis").call(yAxis)
+			.attr("transform","translate("+(barCharPadding.left-1)+","+0 +")")
+			.style("color","grey")
+			.style("font-color","black")
+			
+			var xtag = d3.scaleLinear().domain([0,maxSales]).range([barCharPadding.left,barCharWidth-barCharPadding.right])
+			var xAxis = d3.axisBottom(xtag)
+			d3.select("#xAxis").call(xAxis)
+			.attr("transform","translate("+0+","+ (barCharHeight - barCharPadding.bottom)+")")
+			.style("color","grey")
+			.style("font-color","black")
+			
+			//设置x轴文字
+			d3.select("#xtag")
+			.append("text")
+			.text("sales:(k)")
+			.attr("transform","translate("+(barCharWidth-barCharPadding.right*2)+","+(barCharHeight-barCharPadding.bottom/5)+")")
+			.attr("font-family", "sans-serif")
+			.attr("font-size", "13px")
+			.attr("fill", "blue");
+			
+	   }
+   </script>
+</body>
+
+</html>

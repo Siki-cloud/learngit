@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>地图</title>
+  
+</head>
+
+<body>
+  <svg></svg>
+	<!-- 决定用v7 测试一下 -->
+    <script src="d3/d3.min.js"></script>
+  <script src="https://unpkg.com/topojson-client@3"></script>
+  <script>
+    d3.json("data/states-albers-10m.json").then(function(us) {
+      d3.csv("data/unemployment201907.csv").then(function(data) {
+        
+        //示范视频中的代码，d3 v5.5以下可用，稍微修改
+        // var rateMap = data.reduce(function(acc, cur) {
+        //   acc.set(cur.name, +cur.rate)
+        //   return acc;
+        // }, d3.map());
+
+        //d3.js v6.6以上可用 使用index代替map，还有可用group，rollup ,详见d3文档：
+        //https://github.com/d3/d3/blob/master/API.md#arrays-d3-array
+        var rateMap = d3.index(data ,function(d){
+          return d.name; //name为关键字，映射失业率实体
+        }); //map
+		
+        console.log(data);//array
+        var maxRate = d3.max(data, function(d) {
+          return +d.rate
+        })
+        console.log(rateMap);
+        console.log("maxRate:" + maxRate);
+        var title = "Unemployment rate (%)";
+
+        // 绘制地图区域
+        var color = d3.scaleQuantize([0, 7], d3.schemeBlues[6]);
+        var path = d3.geoPath();
+        var svg = d3.select("svg")
+          .attr("width", 975)
+          .attr("height", 610);
+
+        svg.append("g")
+          .selectAll("path")
+          .data(topojson.feature(us, us.objects.states).features)
+          .join("path")
+          .attr("d", path)
+          .attr("fill", function(d) {
+            var rate = rateMap.get(d.properties.name).rate;
+            return color(rate);
+          })
+          .append("title")
+          .text(function(d) {
+            return d.properties.name + "\n" + rateMap.get(d.properties.name).rate + "%";
+          });
+
+        // 绘制区域的边界
+        svg.append("g").append("path")
+          .datum(topojson.mesh(us, us.objects.states, (a, b) => a !== b))
+          .attr("fill", "none")
+          .attr("stroke", "white")
+          .attr("stroke-linejoin", "round")
+          .attr("d", path);
+
+        // 绘制图例
+        var legend = svg.append("g")
+          .attr("id", "legend")
+          .attr("transform", "translate(600, 30)");
+        var legendWidth = 260,
+          legendHeight = 30,
+          legendTop = 16; // 绘制标题区域
+
+        // 绘制矩形
+        // 从颜色的编号映射成图例上的位置
+        var x = d3.scaleLinear()
+          .domain([0, color.range().length])
+          .rangeRound([0, legendWidth]);
+        // 从颜色的编号映射成失业率的数值
+        var values = d3.scaleLinear()
+          .domain(x.domain())
+          .range(color.domain());
+        legend.selectAll("rect")
+          .data(color.range())
+          .join("rect")
+          .attr("x", (d, i) => x(i))
+          .attr("y", legendTop)
+          .attr("width", (d, i) => x(i + 1) - x(i))
+          .attr("height", legendHeight - legendTop)
+          .attr("fill", d => d);
+
+        // TODO：完成图例的其它部分，可参考示范视频4
+		// 绘制图例
+		var title = "Unemployment rate (%)";
+		legend.append("text")
+		.attr("calss","title")
+		.text(title)
+		.attr("font-size","16px")
+		.attr("transform","translate(0,"+(legendTop/2)+')');
+		
+		var values = d3.scaleLinear()
+		.domain(x.domain())
+		.range(color.domain());
+		
+		var format = d3.format(".1f");
+		var legendAxis = d3.axisBottom(x)
+		legend.append("g")
+		.call(legendAxis.ticks(7)
+		.tickFormat(function(d){
+			return format(values(d))
+		}))
+		.attr("transform","translate(0,"+(legendHeight)+")" );
+      })
+    })
+  </script>
+</body>
+
+</html>

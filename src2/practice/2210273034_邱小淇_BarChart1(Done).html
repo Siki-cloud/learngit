@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>柱形图</title>
+</head>
+
+<body>
+  <svg>
+    <g id="bars"></g>
+  </svg>
+  <script src="../d3/d3.min.js"></script>
+  <script>
+    // 定义数组
+    var dataSet = [50, 43, 120, 87, 99, 167, 142];
+    // 定义SVG
+    var w = 700;
+    var h = 400;
+    var rectWidth = 30;
+    var rectStep = 1.5 * rectWidth;
+    var svg = d3.select("svg")
+      .attr("width", w)
+      .attr("height", h);
+    var padding = {top: 20, left: 20, right: 20, bottom: 40};
+    draw();
+
+	//ToDo:在完成update和exit部分代码后打开注释将绘制正确，否则错误
+	dataSet = [5, 10, 20]; 
+	draw();
+	
+    // 绘画函数 draw()
+    function draw() {
+      // 绑定数据
+      var bindings = d3.select("#bars").selectAll("rect")
+        .data(dataSet);
+      var updateRects = bindings;
+      var enterRects = bindings.enter();
+      var exitRects = bindings.exit();
+
+      //完成enter部分处理方法
+      enterRects.append("rect")
+      .attr("width", rectWidth)
+      .attr("height", function(d){
+        return d;
+      })
+      .attr("x", function(d,i){
+        return padding.left+i*rectStep;
+      })
+      .attr("y", function(d,i){
+        return h-d-padding.bottom;
+      })
+      .style("fill", "steelblue");
+     // DONE!: 完成update部分处理方法
+	 updateRects.attr("width", rectWidth)
+	 .attr("height", function(d){
+	   return d;
+	 })
+	 .attr("x", function(d,i){
+	   return padding.left+i*rectStep;
+	 })
+	 .attr("y", function(d,i){
+	   return h-d-padding.bottom;
+	 })
+	 .style("fill", "steelblue");
+	 // console.log(dataSet)
+     // TDONE!: 完成exit部分处理方法
+	 exitRects.remove()
+    }
+  </script>
+</body>
+
+</html>

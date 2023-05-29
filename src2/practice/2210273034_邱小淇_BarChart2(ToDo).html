@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>柱形图</title>
+  <style>
+  svg {
+   border: 2px solid gray;
+ }
+  </style>
+</head>
+
+<body>
+  <svg>
+    <g id="bars"></g>
+  </svg>
+  <script src="d3/d3.min.js"></script>
+  <script>
+    // 定义数组
+    var dataSet = [50, 4, 12, 8];
+    // 定义SVG
+    var w = 700;
+    var h = 400;
+    var svg = d3.select("svg")
+      .attr("width", w)
+      .attr("height", h);
+    var padding = {top: 20, left: 20, right: 20, bottom: 40};
+    draw();
+
+	//ToDo:在完成update和exit部分代码后打开注释将绘制正确，否则错误
+	dataSet = [5, 10, 20]; 
+	//dataSet = [1,2,3,4,5,6]
+	draw();
+	
+    // 绘画函数 draw()
+    function draw() {
+      // 绑定数据
+      var bindings = d3.select("#bars").selectAll("rect")
+        .data(dataSet);
+      var updateRects = bindings;
+      var enterRects = bindings.enter();
+      var exitRects = bindings.exit();
+
+      var yScale = d3.scaleLinear()
+      .domain([0, d3.max(dataSet)]) // input domain
+      .range([h-padding.bottom, padding.top]);
+
+      var xScale = d3.scaleBand()
+      .domain(d3.range(dataSet.length))
+      .rangeRound([padding.left, w-padding.right])
+      .paddingInner(0.3)
+
+      //完成enter部分处理方法
+      enterRects.append("rect")
+      .attr("width", xScale.bandwidth())
+      .attr("height", function(d){
+        return yScale(0)-yScale(d);
+      })
+      .attr("x", function(d,i){
+        return xScale(i);
+      })
+      .attr("y", function(d,i){
+        return yScale(d);
+      })
+      .style("fill", "steelblue");
+     // ToDo: 完成update部分处理方法
+		updateRects.attr("width",xScale.bandwidth())
+		.attr("height", function(d){
+		  return yScale(0)-yScale(d);
+		})
+		.attr("x", function(d,i){
+		  return xScale(i);
+		})
+		.attr("y", function(d,i){
+		  return yScale(d);
+		})
+		.style("fill", "grey");
+		//console.log(dataSet)
+		
+     // ToDo: 完成exit部分处理方法
+		exitRects.remove();
+    }
+  </script>
+</body>
+
+</html>

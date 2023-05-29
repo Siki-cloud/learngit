@@ -1,0 +1,25 @@
+body {
+	font-family: Helvetica, Arial, sans-serif
+}
+
+h1 {
+	background-color: steelblue;
+	color: white;
+	padding: 5px;
+}
+
+h2 {
+	color: gray;
+}
+
+#CatergoryChart,
+#Map,
+#Other {
+	border-width: 2px;
+	border-color: gray;
+	border-style: solid;
+}
+
+.mainView {
+	display: flex;
+}
