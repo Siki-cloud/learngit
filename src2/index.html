@@ -9,8 +9,8 @@
 	<body>
 		<h1>Global Sales</h1>
 		<div class="mainView">
-		  <div>
-		    <h2>Categories</h2>
+		  <div >
+		    <h2 style="color: black;" id='barChartTitle'>Categories：sales and profit</h2>
 		    <svg id="CatergoryChart">
 				  <g id="rects"></g>
 				  <g id="xAxis"></g>
@@ -18,21 +18,28 @@
 				  <g id="xtag"></g>
 			  </svg>
 		  </div>
+		 
 		  <div>
-		    <h2>Areas</h2>
+		    <h2 style="color: black;" id='MapTitle'>Areas:profit of all categories</h2>
 		    <svg id="Map"></svg>
 		  </div>
 		  <div>
-		    <h2>Other</h2>
-		    <svg id="Other"></svg>
+		    <h2 style="color: black;" id='lineTitle'>Line:sales of all categories</h2>
+		    <svg id="Other" >
+				<g id="lines"></g>
+				<g id="linexAxis"></g>
+				<g id="lineyAxis"></g>
+				<g id="lineytag"></g>
+			</svg>
 		  </div>
-		</div>
+	</div>
 		<script src="https://unpkg.com/topojson-client@3"></script>
 		<script type="text/javascript" src="script/readargs.js"></script>
 		<script src="d3/d3.min.js"></script>
 		
 		<script type="text/javascript" src="script/barchart.js?datafile=data/sub-categories-states-sales.csv"></script>
 		<script type="text/javascript" src ="script/map.js?datamap=data/states-albers-10m.json&datatarget=data/sub-categories-states-sales.csv"></script>
+		<script type="text/javascript" src="script/line.js?datafile=data/sub-categories-states-sales.csv"></script>
 		
 	</body>
 </html>

@@ -11,15 +11,22 @@ h1 {
 h2 {
 	color: gray;
 }
-
+div {
+	margin:5px;
+	border:0;
+	padding:0;
+}
 #CatergoryChart,
 #Map,
 #Other {
 	border-width: 2px;
 	border-color: gray;
 	border-style: solid;
+	float: left;
 }
 
-.mainView {
-	display: flex;
+.mainView div{
+	/* display: inline; */
+	float: left; 
+
 }
