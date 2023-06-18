@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D3 v7 Rose Chart</title>
+  <style>
+	body{
+		background:grey;
+	  }
+    .chart {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="chart"></div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    // 数据
+    const data = [
+      { A: '魔蝎座', B: 120 },
+      { A: '天秤座', B: 80 },
+      { A: '双子座', B: 100 },
+      { A: '狮子座', B: 60 },
+      { A: '白羊座', B: 40 }
+    ];
+
+    // 获取窗口的宽度和高度
+    const container = d3.select('.chart');
+    const width = container.node().clientWidth;
+    const height = container.node().clientHeight;
+
+    // 创建 SVG 容器
+    const svg = container.append('svg')
+      .attr('width', '100%')
+      .attr('height', '100%')
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('preserveAspectRatio', 'xMidYMid meet');
+
+    // 创建极坐标系生成器
+    const radius = Math.min(width, height) / 2;
+    const angleScale = d3.scaleBand()
+      .domain(data.map(d => d.A))
+      .range([0, Math.PI * 2]);
+
+    // 创建饼图布局
+    const pie = d3.pie()
+      .value(d => d.B)
+      .sort(null);
+
+    // 计算饼图的布局
+    const arcs = pie(data);
+
+    // 创建绘图区域
+    const plot = svg.append('g')
+      .attr('transform', `translate(${width / 2},${height / 2})`);
+
+    // 绘制玫瑰图
+    plot.selectAll('.arc')
+      .data(arcs)
+      .join('path')
+      .attr('class', 'arc')
+      .attr('d', d3.arc()
+        .innerRadius(d =>  0)
+        .outerRadius(d => (d.index + 1) * radius / data.length)
+        .startAngle(d => angleScale(d.data.A))
+        .endAngle(d => angleScale(d.data.A) + angleScale.bandwidth())
+        .padAngle(0.01)
+        .padRadius(radius))
+      .attr('fill', (d, i) => d3.schemeCategory10[i % 10]);
+
+    // 监听窗口大小变化事件，并重新绘制玫瑰图
+    window.addEventListener('resize', () => {
+      // 更新窗口的宽度和高度
+      const newWidth = container.node().clientWidth;
+      const newHeight = container.node().clientHeight;
+
+      // 更新 SVG 容器的宽度和高度
+      svg.attr('width', newWidth)
+        .attr('height', newHeight)
+        .attr('viewBox', `0 0 ${newWidth} ${newHeight}`);
+
+      // 更新绘图区域的位置
+      plot.attr('transform', `translate(${newWidth / 2},${newHeight / 2})`);
+
+      // 更新玫瑰图的半径
+      const newRadius = Math.min(newWidth, newHeight) / 2;
+
+      // 更新玫瑰图的路径生成器
+      plot.selectAll('.arc')
+        .attr('d', d3.arc()
+          .innerRadius(d => d.index * newRadius / data.length)
+          .outerRadius(d => (d.index + 1) * newRadius / data.length)
+          .startAngle(d => angleScale(d.data.A))
+          .endAngle(d => angleScale(d.data.A) + angleScale.bandwidth())
+          .padAngle(0.01)
+          .padRadius(newRadius));
+    });
+  </script>
+</body>
+</html>

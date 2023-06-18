@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title >Qiu Xiaoqi #花海输了#</title>
+	
+		<script src='js/d3.min.js'></script>
+		
+		<!-- 指定网页字符编码 -->
+		<meta charset="UTF-8">
+		<!-- 适配移动端 -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>"花海输了"新浪热搜舆情分析</title>
+		<link rel="stylesheet" href="css/index.css">
+	</head>
+	<body>
+		<div >
+		<div id="title">新浪热搜舆情分析
+		——"#花海输了"</div>
+		<div id="left1">
+		</div>
+		<div id="left2">
+		</div>
+		<div id="center1">
+		    <div class="item">
+				<div class="number" id="v1"></div>
+		        <div class="text">参与总计</div> 
+				
+		    </div>
+		    <div class="item">
+		        <div class="number" id="heal"></div>
+		       <!-- <div class="text">累计治愈</div> -->
+		    </div>
+		    <div class="item">
+		        <div class="number" id="v2"></div>
+		        <div class="text",id="checkindex">观测指标</div>
+		    </div>
+		    <div class="item">
+		        <div class="number" id="v3"></div>
+		        <div class="text">男生人数</div>
+		    </div>
+		    <div class="item">
+		        <div class="number" id="noInfect"></div>
+		       <!-- <div class="text">无症状感染者</div> -->
+		    </div>
+		    <div class="item">
+		        <div class="number" id="v4"></div>
+		        <div class="text">女生人数</div>
+		    </div>
+		</div>
+		<div id="center2">
+			
+		</div>
+		<div id="right1"></div>
+		<div id="right2"></div>
+		</div>
+		<script src="https://unpkg.com/topojson-client@3"></script>
+		<!-- <script src="https://observablehq.com/@d3/color-legend"></script> -->
+		<script type="text/javascript" src="scripts/readargs.js"></script>
+		<script type="text/javascript" src ="scripts/center2.js?datamap=data/china3.json&datatarget=data/huahai2.csv"></script>
+		<script type="text/javascript" src ="scripts/left1.js?atatarget=data/huahai2.csv"></script>
+		<script type="text/javascript" src ="scripts/templeft2.js?datatarget=data/huahai2.csv"></script>
+		<script type="text/javascript" src ="scripts/right1.js?datatarget=data/huahai2.csv"></script>
+		<script type="text/javascript" src ="scripts/right2.js?datatarget=data/huahai2.csv"></script>
+	</body>
+</html>
